@@ -19,4 +19,11 @@ class Account(models.Model):
 
 
     def __str__(self) -> str:
-        return self.user_name    
+        return self.user_name   
+
+
+class Follow(models.Model):
+    following_user = models.ForeignKey('Account', on_delete=models.CASCADE, related_name='following')
+    followed_user = models.ForeignKey('Account', on_delete=models.CASCADE, related_name='followers')
+    
+
