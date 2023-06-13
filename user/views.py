@@ -1,3 +1,7 @@
 from django.shortcuts import render
+from .models import Account
 
-# Create your views here.
+
+def home(request):
+    accounts = User.objects.all()
+    return render(request, 'home.html', {'accounts': accounts, 'posts': posts})
