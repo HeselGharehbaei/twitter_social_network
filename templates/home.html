@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Twitter social network</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- اضافه کردن فایل‌های CSS برای استایل دهی به صفحه -->
+	<style>
+		/* استایل هدر صفحه */
+		header {
+			background-color: #333;
+			color: #fff;
+			padding: 20px;
+			text-align: center;
+		}
+
+		header h1 {
+			margin: 0;
+			font-size: 48px;
+			font-weight: 700;
+			text-transform: uppercase;
+		}
+
+		header nav {
+			margin-top: 20px;
+		}
+
+		header nav ul {
+			margin: 0;
+			padding: 0;
+			list-style: none;
+			display: flex;
+			justify-content: center;
+		}
+
+		header nav ul li {
+			margin: 0 10px;
+		}
+
+		header nav ul li a {
+			color: #fff;
+			font-size: 20px;
+			font-weight: 500;
+			text-decoration: none;
+			text-transform: uppercase;
+			transition: all 0.3s ease-in-out;
+		}
+
+		header nav ul li a:hover {
+			color: #c4c4c4;
+		}
+
+		/* استایل بخش اصلی صفحه */
+		#home {
+			background-color: #f2f2f2;
+			padding: 100px 0;
+			text-align: center;
+		}
+
+		#home h2 {
+			margin: 0;
+			font-size: 48px;
+			font-weight: 700;
+			text-transform: uppercase;
+			color: #333;
+		}
+
+		#home p {
+			font-size: 24px;
+			font-weight: 500;
+			color: #666;
+			margin-top: 20px;
+		}
+
+		#home .btn {
+			display: inline-block;
+			padding: 10px 20px;
+			margin-top: 40px;
+			background-color: #333;
+			color: #fff;
+			font-size: 20px;
+			font-weight: 500;
+			text-transform: uppercase;
+			text-decoration: none;
+			border-radius: 5px;
+			transition: all 0.3s ease-in-out;
+		}
+
+		#home .btn:hover {
+			background-color: #c4c4c4;
+			color: #333;
+		}
+	</style>
+</head>
+<body>
+	<!-- هدر صفحه -->
+	<header>
+		<div class="container">
+			<h1>Social Media</h1>
+			<nav>
+				<ul>
+					<li><a href="#">خانه</a></li>
+					<li><a href="#">درباره ما</a></li>
+					<li><a href="#">تماس با ما</a></li>
+				</ul>
+			</nav>
+		</div>
+	</header>
+
+	<!-- صفحه اصلی -->
+	<section id="home">
+		<div class="container">
+			{% for user in users %}
+			<div>
+				{{ user }}
+			</div>
+			{% endfor %}
+		</div>
+	</section>
+
+	<!-- فوتر صفحه -->
+	<footer>
+		<div class="container">
+			<p>کپی رایت © ۲۰۲۱ نام برنامه شما. تمامی حقوق محفوظ است.</p>
+		</div>
+	</footer>
+
+	<!-- اضافه کردن فایل‌های جاوا اسکریپت برای اجرای کدهای JS -->
+</body>
+</html>
