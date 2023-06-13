@@ -9,12 +9,10 @@ class Post(models.Model):
                                 )
     text = models.TextField(_("Post")) 
     title = models.CharField(_("Title"), max_length=100) 
-    acctive = models.BooleanField(_("Is Post Archive?"), default=False)      
-    create_at = models.DateTimeField(
-        _("create at"), auto_now=False, auto_now_add=True)
-    tag = models.ManyToManyField(_("Tag"),
-                                    verbose_name=_("Tags"),
-                                    )  
+    is_archived = models.BooleanField(_("Is Post Archive?"), default=False)      
+    created_at = models.DateTimeField(
+        _("Create at"), auto_now=False, auto_now_add=True)
+    tags = models.ManyToManyField("Tag", verbose_name=_("Tag"), related_name='posts_tags')
 
 
     class Meta:
@@ -28,6 +26,7 @@ class Post(models.Model):
 
 class Tag(models.Model):
     name = models.CharField(_("Name"), max_length=50)
+    posts = models.ManyToManyField("Post", verbose_name=_("Posts"), related_name='tag_posts')
 
 
 class Image(models.Model):
@@ -52,7 +51,7 @@ class Comment(models.Model):
                         verbose_name=_("Account"),
                         on_delete=models.CASCADE
                         )   
-    Post = models.ForeignKey("Post",
+    post = models.ForeignKey(Post,
                             verbose_name=_("Post"),
                             on_delete=models.CASCADE)
 

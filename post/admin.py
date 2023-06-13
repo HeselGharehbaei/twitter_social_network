@@ -11,14 +11,14 @@ class CommentInline(admin.StackedInline):
 
 
 class TagInline(admin.TabularInline):
-    model = Tag
-    fk_name = 'post'
+    model = Tag.posts.through
+    extra = 1
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display = ('title', 'user', 'created_at')  
-    list_filter = ('user', 'acctive')
-    search_fields = ('title', 'tag')
+    list_display = ('title', 'user')  
+    list_filter = ('user', 'is_archived')
+    search_fields = ('title', 'tags')
     inlines = [ImageInline, CommentInline, TagInline]
 
 
@@ -35,6 +35,6 @@ class ImageAdmin(admin.ModelAdmin):
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
     search_fields = ('title', 'text',) 
-    list_display = ('title', 'post', 'created_at')
+    list_display = ('title', 'post')
     list_filter = ('post',)
      
