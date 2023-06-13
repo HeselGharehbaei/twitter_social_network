@@ -1,3 +1,7 @@
 from django.shortcuts import render
+from .models import Like
 
-# Create your views here.
+
+def home(request):
+    likes = Like.objects.all()
+    return render(request, 'core.html', {'Like': Like})
