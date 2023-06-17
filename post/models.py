@@ -63,3 +63,16 @@ class Comment(models.Model):
 
     def __str__(self) -> str:
         return self.title
+
+
+class Like(models.Model):
+    like = models.BooleanField(_("Is Like?"), default=False) 
+    Post = models.ForeignKey("Post",
+                                verbose_name=_("Post"),
+                                on_delete=models.CASCADE)
+    user = models.ForeignKey("user.Account",
+                        verbose_name=_("Account"),
+                        on_delete=models.CASCADE
+                        ) 
+
+
