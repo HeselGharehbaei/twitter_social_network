@@ -1,26 +1,38 @@
 from django.contrib import admin
 from .models import Account, Follow
+from django.utils.translation import gettext as _
 
 
 class FollowInline(admin.TabularInline):
     model = Follow
-    fk_name = 'followed_user'
-
+    fk_name = 'from_user'    
+    
 
 @admin.register(Account)
 class AccountAdmin(admin.ModelAdmin):
-    list_display = ('user_name', 'first_name', 'last_name', 'acctive', 'image')
-    list_filter = ('acctive',)
-    search_fields = ('user_name', 'first_name', 'last_name')
+    list_display = ('username', 'first_name', 'last_name', 'is_active', 'email')
+    list_filter = ('is_active',)
+    search_fields = ('username', 'first_name', 'last_name', 'email')
 
     fieldsets = (
-        (None, {'fields': ('user_name', 'password')}),
-        ('Personal Info', {'fields': ('first_name', 'last_name', 'bio', 'image')}),
-        ('Permissions', {'fields': ('acctive',)}),
+        (None, {'fields': ('username', 'password')}),
+        ('Personal Info', {'fields': ('first_name', 'last_name', 'bio', 'image', 'email')}),
+        ('Permissions', {
+            'fields': ('is_active',),
+            'classes': ('collapse',)
+        }),
+        (_("Date Information"), {
+            'fields': ('date_of_birth',),
+            'classes': ('collapse',)
+        }),
     )
+
     inlines = [FollowInline]
+
 
 @admin.register(Follow)
 class FollowAdmin(admin.ModelAdmin):
-    list_display = ('following_user', 'followed_user')
-    search_fields = ('following_user', 'followed_user')
+    list_display = ('from_user', 'to_user')
+    search_fields = ('from_user', 'to_user')    
+
+
