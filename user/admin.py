@@ -34,5 +34,3 @@ class AccountAdmin(admin.ModelAdmin):
 class FollowAdmin(admin.ModelAdmin):
     list_display = ('from_user', 'to_user')
     search_fields = ('from_user', 'to_user')    
-
-
