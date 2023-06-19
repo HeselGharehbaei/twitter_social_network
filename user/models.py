@@ -59,3 +59,13 @@ class Account(AbstractBaseUser):
 
     def __str__(self):
         return self.username
+
+
+class Follow(models.Model):
+    from_user = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='following')
+    to_user = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='followers')
+    created_at = models.DateField(auto_now_add=True)   
+
+
+    def __str__(self):
+        return f'{self.from_user} following {self.to_user}'     
