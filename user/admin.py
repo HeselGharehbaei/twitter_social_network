@@ -16,7 +16,7 @@ class AccountAdmin(admin.ModelAdmin):
 
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
-        ('Personal Info', {'fields': ('first_name', 'last_name', 'bio', 'image', 'email')}),
+        ('Personal Info', {'fields': ('first_name', 'last_name', 'bio', 'image', 'email', 'phone_number')}),
         ('Permissions', {
             'fields': ('is_active',),
             'classes': ('collapse',)

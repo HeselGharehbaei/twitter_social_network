@@ -42,12 +42,12 @@ class LikeAdmin(admin.ModelAdmin):
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ('title', 'user', 'post', 'parent')
+    list_display = ('user', 'post', 'parent')
     list_filter = ('post',)
     search_fields = ('title', 'text')
     fieldsets = (
         (_("Comment Information"), {
-            'fields': ('title', 'text', 'parent', 'user', 'post')
+            'fields': ('text', 'parent', 'user', 'post')
         }),
     )
 

@@ -11,8 +11,15 @@ class Post(models.Model):
     title = models.CharField(_("Title"), max_length=100) 
     is_archived = models.BooleanField(_("Is Post Archive?"), default=False)      
     created_at = models.DateTimeField(
-        _("Create at"), auto_now=False, auto_now_add=True)
+        _("Create at"), 
+        auto_now=False, 
+        auto_now_add=True
+    )
     tags = models.ManyToManyField("Tag", verbose_name=_("Tag"), related_name='posts_tags')
+
+
+    def is_liked_by_user(self, user):
+        self.like_set.filter(user= user).existes()
 
 
     class Meta:
@@ -28,6 +35,10 @@ class Tag(models.Model):
     name = models.CharField(_("Name"), max_length=50)
 
 
+    def __str__(self) -> str:
+        return self.name   
+
+
 class Image(models.Model):
     name = models.CharField(_("Name"), max_length=50)
     alt = models.CharField(_("Alternative Text"), max_length=100)
@@ -41,7 +52,6 @@ class Image(models.Model):
 
 
 class Comment(models.Model):
-    title = models.CharField(_("Title"), max_length=150)
     text = models.TextField(_("Text"))
     parent = models.ForeignKey("self",
                                verbose_name=_("Parent Comment"),
@@ -61,11 +71,7 @@ class Comment(models.Model):
 
     class Meta:
         verbose_name = _("Comment")
-        verbose_name_plural = _("Comment")
-
-
-    def __str__(self) -> str:
-        return self.title    
+        verbose_name_plural = _("Comment")    
 
 
 class Like(models.Model):
