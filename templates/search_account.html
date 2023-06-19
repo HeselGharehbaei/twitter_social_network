@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %} Search Results {% endblock %}
+{% block content %}
+    <h1>Search Results</h1>
+    {% if accounts %}
+        <ul>
+        {% for account in accounts %}
+            <li><a href="{% url 'account' account.id %}">{{ account.username }}</a></li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No accounts found.</p>
+    {% endif %}
+{% endblock %}
