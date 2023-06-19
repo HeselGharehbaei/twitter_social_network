@@ -26,7 +26,6 @@ class Post(models.Model):
 
 class Tag(models.Model):
     name = models.CharField(_("Name"), max_length=50)
-    posts = models.ManyToManyField("Post", verbose_name=_("Posts"), related_name='tag_posts')
 
 
 class Image(models.Model):
@@ -35,7 +34,10 @@ class Image(models.Model):
     Post = models.ForeignKey("Post",
                                 verbose_name=_("Post"),
                                 on_delete=models.CASCADE)
-    image = models.ImageField(_("Image"), upload_to='Post',)
+    image = models.FileField(
+        _("Image"), 
+        upload_to="uploads/photos", blank= True, null= True
+    )    
 
 
 class Comment(models.Model):
@@ -56,18 +58,19 @@ class Comment(models.Model):
                             on_delete=models.CASCADE)
 
 
+
     class Meta:
         verbose_name = _("Comment")
         verbose_name_plural = _("Comment")
 
 
     def __str__(self) -> str:
-        return self.title
+        return self.title    
 
 
 class Like(models.Model):
     like = models.BooleanField(_("Is Like?"), default=False) 
-    Post = models.ForeignKey("Post",
+    post = models.ForeignKey("Post",
                                 verbose_name=_("Post"),
                                 on_delete=models.CASCADE)
     user = models.ForeignKey("user.Account",
@@ -76,3 +79,5 @@ class Like(models.Model):
                         ) 
 
 
+    def __str__(self):
+        return f'{self.user} likes {self.post}'                             
