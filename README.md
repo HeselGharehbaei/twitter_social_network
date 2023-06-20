@@ -2,11 +2,11 @@
 ## This is the second project in Daneshkar Bootcamp, which aims to create a social network similar to Twitter.
 
 
-**## installation**
-**### pip install -r requirements.txt**
+## ** installation**
+### ** pip install -r requirements.txt**
 
 
-**##usage**
+## **usage**
 1. **_python3 -m venv venv_**
 2. **_source venv/bin/activate_**
 3. **_install requirements.text_**
