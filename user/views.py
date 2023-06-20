@@ -10,8 +10,8 @@ def home_page(request):
     return render(request, 'home.html', {'accounts_detailes': accounts_detailes, 'posts_detailes': posts_detailes} )
 
 
-def account(request, account_id):
-    accounts = Account.objects.get(id= account_id)
+def account(request, account_username):
+    accounts = Account.objects.get(username= account_username)
     return render(request, 'account.html', {'accounts': accounts})       
 
 
