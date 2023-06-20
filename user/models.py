@@ -83,8 +83,8 @@ class Account(AbstractBaseUser, BaseModel, TimeStampMixin):
     def get_followers_and_following_count(self):
         following_count = self.following.count()
         followers_count = self.followers.count()
-        following = [(follow.to_user.username, follow.to_user.image.url) for follow in self.following.all()]
-        followers = [(follow.from_user.username, follow.from_user.image.url) for follow in self.followers.all()]
+        following = [(follow.to_user.username) for follow in self.following.all()]
+        followers = [(follow.from_user.username) for follow in self.followers.all()]
         return following_count, following, followers_count, followers 
 
 
