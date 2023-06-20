@@ -1,8 +1,9 @@
 from django.db import models
 from django.utils.translation import gettext as _
+from core.models import BaseModel, TimeStampMixin
 
 
-class Post(models.Model):
+class Post(BaseModel, TimeStampMixin):
     user = models.ForeignKey("user.Account",
                                 verbose_name=_("Account"),
                                 on_delete=models.CASCADE
@@ -10,11 +11,6 @@ class Post(models.Model):
     text = models.TextField(_("Post")) 
     title = models.CharField(_("Title"), max_length=100) 
     is_archived = models.BooleanField(_("Is Post Archive?"), default=False)      
-    created_at = models.DateTimeField(
-        _("Create at"), 
-        auto_now=False, 
-        auto_now_add=True
-    )
     tags = models.ManyToManyField("Tag", verbose_name=_("Tag"), related_name='posts_tags')
 
 
@@ -31,7 +27,7 @@ class Post(models.Model):
         return self.title
 
 
-class Tag(models.Model):
+class Tag(BaseModel, TimeStampMixin):
     name = models.CharField(_("Name"), max_length=50)
 
 
@@ -39,7 +35,7 @@ class Tag(models.Model):
         return self.name   
 
 
-class Image(models.Model):
+class Image(BaseModel, TimeStampMixin):
     name = models.CharField(_("Name"), max_length=50)
     alt = models.CharField(_("Alternative Text"), max_length=100)
     Post = models.ForeignKey("Post",
@@ -51,7 +47,7 @@ class Image(models.Model):
     )    
 
 
-class Comment(models.Model):
+class Comment(BaseModel, TimeStampMixin):
     text = models.TextField(_("Text"))
     parent = models.ForeignKey("self",
                                verbose_name=_("Parent Comment"),
@@ -74,7 +70,7 @@ class Comment(models.Model):
         verbose_name_plural = _("Comment")    
 
 
-class Like(models.Model):
+class Like(BaseModel, TimeStampMixin):
     like = models.BooleanField(_("Is Like?"), default=False) 
     post = models.ForeignKey("Post",
                                 verbose_name=_("Post"),
