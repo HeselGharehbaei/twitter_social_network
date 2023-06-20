@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractBaseUser
 from django.core.validators import RegexValidator
 from django.utils.translation import gettext_lazy as _
 from core.models import BaseModel, TimeStampMixin
+from django.utils import timezone
 
 
 class Account(AbstractBaseUser, BaseModel, TimeStampMixin):
@@ -56,6 +57,14 @@ class Account(AbstractBaseUser, BaseModel, TimeStampMixin):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'email']
+
+
+    def save(self, *args, **kwargs):
+        ''' On save, update timestamps '''
+        if not self.id:
+            self.created_at = timezone.now()
+        self.updated_at = timezone.now()
+        return super(User, self).save(*args, **kwargs)    
 
 
     def __str__(self):
