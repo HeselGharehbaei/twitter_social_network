@@ -10,10 +10,10 @@ class FollowInline(admin.TabularInline):
 
 @admin.register(Account)
 class AccountAdmin(admin.ModelAdmin):
-    list_display = ('username', 'first_name', 'last_name', 'is_active', 'email')
+    list_display = ('id', 'username', 'first_name', 'last_name', 'is_active', 'email', 'created_at', 'deleted')
     list_filter = ('is_active',)
-    search_fields = ('username', 'first_name', 'last_name', 'email')
-
+    search_fields = ('username', 'first_name', 'last_name', 'email', 'deleted')
+    actions = ['undelete_accounts']
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
         ('Personal Info', {'fields': ('first_name', 'last_name', 'bio', 'image', 'email', 'phone_number')}),
@@ -26,9 +26,16 @@ class AccountAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
-
+    
     inlines = [FollowInline]
 
+
+    def undelete_accounts(self, request, queryset):
+        for account in queryset:
+            account.undelete()
+        self.message_user(request, 'Selected accounts have been undeleted.')
+    undelete_accounts.short_description = 'Undelete selected accounts'
+    
 
 @admin.register(Follow)
 class FollowAdmin(admin.ModelAdmin):
