@@ -3,8 +3,8 @@ from .models import Post
 from django.db.models import Q
 
 
-def post(request, post_id):
-    post= Post.objects.get(id= post_id)
+def post(request, post_title):
+    post= Post.objects.get(title= post_title)
     return render(request, 'post.html', {'post': post})   
 
 
