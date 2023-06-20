@@ -18,7 +18,7 @@ class AccountAdmin(admin.ModelAdmin):
         (None, {'fields': ('username', 'password')}),
         ('Personal Info', {'fields': ('first_name', 'last_name', 'bio', 'image', 'email', 'phone_number')}),
         ('Permissions', {
-            'fields': ('is_active',),
+            'fields': ('is_active', 'is_verify', 'is_staff', 'is_admin'),
             'classes': ('collapse',)
         }),
         (_("Date Information"), {
