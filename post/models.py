@@ -15,7 +15,37 @@ class Post(BaseModel, TimeStampMixin):
 
 
     def is_liked_by_user(self, user):
-        self.like_set.filter(user= user).existes()
+        self.like_set.filter(user= user).exists()
+
+
+    def get_like_count(self):
+        return self.likes.count()
+
+
+    def get_comment_count(self):
+        return self.comments.count()
+
+
+    def get_comments_and_users(self):
+        comment_users = {}
+        comments = self.comments.all()
+        for comment in comments:
+            user = comment.user
+            if user.username not in comment_users:
+                comment_users[user.username] = [comment.text]
+            else:
+                comment_users[user.username].append(comment.text)
+        return comment_users, comments.count()    
+
+
+    @classmethod
+    def get_posts_by_tag(cls, tag_name):
+        return cls.objects.filter(tags__name=tag_name) 
+
+
+    @classmethod
+    def get_posts_by_user(cls, user):
+        return cls.objects.filter(user=user)       
 
 
     class Meta:
