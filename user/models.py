@@ -42,6 +42,9 @@ class Account(AbstractBaseUser, BaseModel, TimeStampMixin):
         blank=True, 
         null=True)
     is_active = models.BooleanField(default=True)
+    is_verify = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
     image = models.FileField(
         _("Image"), 
         upload_to="uploads/photos",
