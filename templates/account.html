@@ -3,5 +3,13 @@
 {% block content %}
 	    <h1>{{accounts.username}}</h1> 
         <h2>{{accounts.bio}}</h2>  
-        
+        <h2>{{accounts.date_of_birth}}</h2> 
+        <h2>Followers count: {{ followers_count }}</h2> 
+        <h2>Following count: {{ following_count }}</h2> 
+        <h2>Following: {{ following }}</h2>
+        <h2>Followers: {{ followers }}</h2>
+        {% for post in posts %}
+            <h2>Post title: {{ post.title }}</h2>
+            <h2>Post text: {{ post.text }}</h2>
+        {% endfor %}    
 {% endblock %} 

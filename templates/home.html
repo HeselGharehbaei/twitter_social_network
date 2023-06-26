@@ -15,7 +15,11 @@
             <h2>{{post.text}}</h2> 
         </div>       
         <div>
-            <h2>{{post.user}}</h2> 
+            {%for account in accounts_detailes%} 
+                {%if account == post.user%}
+                    <a href = "{% url 'account' account.username %}"><h2>{{post.user}}</h2></a><br/>  
+                {% endif %} 
+            {%endfor%}      
         </div>              
     {% endfor %}  
 {% endblock %}
