@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 {% block title %} post | {{post.title}} {%endblock%}
 {% block content %}
-	    <h1>{{post.tags}}</h1> 
+        {% for tag in tags%}
+	        <h1>{{tag.name}}</h1> 
+        {%endfor%}    
         <div>
             <h2>{{post.text}}</h2> 
         </div>    

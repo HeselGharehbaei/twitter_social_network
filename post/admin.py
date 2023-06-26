@@ -54,4 +54,4 @@ class CommentAdmin(admin.ModelAdmin):
 
 @admin.register(Image)
 class ImageAdmin(admin.ModelAdmin):
-    list_display = ('name', 'alt', 'Post')
+    list_display = ('name', 'alt', 'post')

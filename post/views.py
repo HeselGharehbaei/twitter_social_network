@@ -5,7 +5,8 @@ from django.db.models import Q
 
 def post(request, post_title):
     post= Post.objects.get(title= post_title)
-    return render(request, 'post.html', {'post': post})   
+    tags = post.tags.all()
+    return render(request, 'post.html', {'post': post, 'tags': tags})   
 
 
 def search_posts(request):
