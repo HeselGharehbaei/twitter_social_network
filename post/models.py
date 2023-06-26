@@ -6,10 +6,17 @@ from core.models import BaseModel, TimeStampMixin
 class Post(BaseModel, TimeStampMixin):
     user = models.ForeignKey("user.Account",
                                 verbose_name=_("Account"),
-                                on_delete=models.CASCADE
+                                on_delete=models.CASCADE,
+                                related_name='post'
                                 )
-    text = models.TextField(_("Post")) 
-    title = models.CharField(_("Title"), max_length=100) 
+    text = models.TextField(_("Post"),
+        help_text=_("Text of the post"),
+    ) 
+    title = models.CharField(
+        _("Title"), 
+        max_length=100,
+        help_text=_("Title of the post"),
+    ) 
     is_archived = models.BooleanField(_("Is Post Archive?"), default=False)      
     tags = models.ManyToManyField("Tag", verbose_name=_("Tag"), related_name='posts_tags')
 
@@ -58,7 +65,11 @@ class Post(BaseModel, TimeStampMixin):
 
 
 class Tag(BaseModel, TimeStampMixin):
-    name = models.CharField(_("Name"), max_length=50)
+    name = models.CharField(
+        _("Name"), 
+        max_length=50,
+        help_text=_("Name of the tag for the post"),
+    )
 
 
     def __str__(self) -> str:
@@ -68,12 +79,15 @@ class Tag(BaseModel, TimeStampMixin):
 class Image(BaseModel, TimeStampMixin):
     name = models.CharField(_("Name"), max_length=50)
     alt = models.CharField(_("Alternative Text"), max_length=100)
-    Post = models.ForeignKey("Post",
+    post = models.ForeignKey("Post",
                                 verbose_name=_("Post"),
                                 on_delete=models.CASCADE)
     image = models.FileField(
         _("Image"), 
-        upload_to="uploads/photos", blank= True, null= True
+        upload_to="uploads/photos", 
+        help_text=_("Name of image for the post"),
+        blank= True, 
+        null= True,
     )    
 
 

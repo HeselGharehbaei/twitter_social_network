@@ -4,21 +4,27 @@ from django.core.validators import RegexValidator
 from django.utils.translation import gettext_lazy as _
 from core.models import BaseModel, TimeStampMixin
 from django.utils import timezone
-
+from post.models import Post
 
 class Account(AbstractBaseUser, BaseModel, TimeStampMixin):
     phone_number= models.CharField(
         _('Phone Number'),
-        max_length=11, unique=True, 
+        max_length=11,
+        help_text=_("Phone Number of user"),  
+        unique=True, 
         validators=[
             RegexValidator(regex="\A(09)(0|1|2|3)[0-9]{7}\d\Z", message="phone number is not correct")
         ])
     username = models.CharField(
         _('User Name'),
-        max_length=50, unique=True)
+        max_length=50,
+        unique=True,
+        help_text=_("Username to login and show in the profile"), 
+    )
     email = models.EmailField(
         _('email address'),
         max_length= 254,
+        help_text=_("Email to login and show in the profile"),
         unique=True
     )
     bio = models.CharField(
@@ -34,12 +40,14 @@ class Account(AbstractBaseUser, BaseModel, TimeStampMixin):
     )
     first_name = models.CharField(
         _('First Name'),
-        max_length=50, 
+        max_length=50,
+        help_text=_("First Name of user"),  
         blank=True, 
         null=True)
     last_name = models.CharField(
         _('Last Name'),
-        max_length=50, 
+        max_length=50,
+        help_text=_("Last Name of user"), 
         blank=True, 
         null=True)
     is_active = models.BooleanField(default=True)
@@ -64,7 +72,7 @@ class Account(AbstractBaseUser, BaseModel, TimeStampMixin):
         if not self.id:
             self.created_at = timezone.now()
         self.updated_at = timezone.now()
-        return super(User, self).save(*args, **kwargs)    
+        return super(Account, self).save(*args, **kwargs)    
 
 
     def __str__(self):
@@ -94,7 +102,7 @@ class Account(AbstractBaseUser, BaseModel, TimeStampMixin):
         followers_count = self.followers.count()
         following = [(follow.to_user.username) for follow in self.following.all()]
         followers = [(follow.from_user.username) for follow in self.followers.all()]
-        return following_count, following, followers_count, followers 
+        return following_count, following, followers_count, followers  
 
 
 class Follow(BaseModel, TimeStampMixin):
