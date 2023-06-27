@@ -43,7 +43,12 @@ class Post(models.Model, TimeStampMixin):
     def get_comments(self):
         comments = self.comments.all()
         comments_count = self.comments.count() 
-        return comments, comments_count  
+        return comments, comments_count 
+
+
+    def get_image(self):
+        images = self.image.all()
+        return images  
 
 
     @classmethod
