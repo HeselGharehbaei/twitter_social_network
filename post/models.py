@@ -30,10 +30,6 @@ class Post(models.Model, TimeStampMixin):
     )
 
 
-    def is_liked_by_user(self, user):
-        self.like_set.filter(user= user).exists()
-
-
     def get_like(self):
         likes = self.like.all()
         likes_count= self.like.count()
