@@ -1,13 +1,18 @@
 {% extends 'base.html' %}
 {% block title %} post | {{post.title}} {%endblock%}
 {% block content %}
-    <a href="{% url 'delete' post.title %}" class="btn btn-danger">Delete Post</a>
+    <a href="{% url 'delete post' post.title %}" class="btn btn-danger">Delete Post</a>
     {% for tag in tags%}
         <h1>{{tag.name}}</h1>                 
     {%endfor%}    
     <div>
         <h2>{{post.text}}</h2> 
-    </div>    
+    </div>
+    {% if post.image %}
+        {% for image in images%}   
+            <img src="{{ image.image.url }}" width="350" height="250">             
+        {%endfor%}     
+    {% endif %}    
     <div>
         <h2>{{post.user.username}}</h2></a><br/> 
     </div>  
@@ -20,6 +25,7 @@
     <p>comment count: {{comments_count}} </p> 
     </div>  
     {% for comment in comments%}
+        <a href="{% url 'delete comment' comment.id %}" class="btn btn-danger">Delete comment</a>
         <div> <h3>Comments:</h3></div>
         <h6>{{comment.user}}:</h6><h8> {{comment.text}} </h8>
         <p>created at: {{comment.created_at}} </p> 
