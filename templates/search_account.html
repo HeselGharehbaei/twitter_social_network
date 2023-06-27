@@ -5,7 +5,7 @@
     {% if accounts %}
         <ul>
         {% for account in accounts %}
-            <li><a href="{% url 'account' account.username %}">{{ account.username }}</a></li>
+            <li><a href="{% url 'user:account' account.username %}">{{ account.username }}</a></li>
         {% endfor %}
         </ul>
     {% else %}

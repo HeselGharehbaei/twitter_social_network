@@ -5,7 +5,7 @@
     {% if posts %}
         <ul>
         {% for post in posts %}
-            <li><a href="{% url 'post' post.title %}">{{ post.title}}</a></li>
+            <li><a href="{% url 'post:post' post.title %}">{{ post.title}}</a></li>
         {% endfor %}
         </ul>
     {% else %}

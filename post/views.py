@@ -30,10 +30,10 @@ class SearchPostsView(View):
 class DeletePostView(View):
     def get(self, request, post_title):
         Post.objects.get(title= post_title).delete()
-        return redirect("post")
+        return redirect("user:home")
 
 
 class DeleteCommentView(View):
     def get(self, request, comment_id):
         Comment.objects.get(id= comment_id).delete()
-        return redirect("post")        
+        return redirect("user:home")        

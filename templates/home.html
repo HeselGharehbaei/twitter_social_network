@@ -1,24 +1,24 @@
 {% extends 'base.html' %}
 {% block title %} Home {%endblock%}
 {% block content %}
-    <form method="get" action="{% url 'search account' %}">
+    <form method="get" action="{% url 'user:search account' %}">
         <input type="text" name="q" placeholder="Search...">
         <button type="submit">Search Accounts</button>
     </form>
-    <form method="get" action="{% url 'search posts' %}">
+    <form method="get" action="{% url 'post:search posts' %}">
         <input type="text" name="q" placeholder="Search...">
         <button type="submit">Search Posts</button>
     </form>
     <div class="card">
     {%for post in posts_detailes%}   
-        <a class="card-body" href = "{% url 'post' post.title %}">{{post.title}}</a><br/>  
+        <a class="card-body" href = "{% url 'post:post' post.title %}">{{post.title}}</a><br/>  
         <div>
             <h2>{{post.text}}</h2> 
         </div>       
         <div>
             {%for account in accounts_detailes%} 
                 {%if account == post.user%}
-                    <a class="card-body" href = "{% url 'account' account.username %}"><h2>{{post.user}}</h2></a><br/>  
+                    <a class="card-body" href = "{% url 'user:account' account.username %}"><h2>{{post.user}}</h2></a><br/>  
                 {% endif %} 
             {%endfor%}      
         </div>              
