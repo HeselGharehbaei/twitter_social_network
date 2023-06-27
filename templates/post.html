@@ -1,13 +1,27 @@
 {% extends 'base.html' %}
 {% block title %} post | {{post.title}} {%endblock%}
 {% block content %}
-        {% for tag in tags%}
-	        <h1>{{tag.name}}</h1> 
-        {%endfor%}    
-        <div>
-            <h2>{{post.text}}</h2> 
-        </div>    
-        <div>
-            <h2>{{post.user}}</h2> 
-        </div>         
+    <a href="{% url 'delete' post.title %}" class="btn btn-danger">Delete Post</a>
+    {% for tag in tags%}
+        <h1>{{tag.name}}</h1>                 
+    {%endfor%}    
+    <div>
+        <h2>{{post.text}}</h2> 
+    </div>    
+    <div>
+        <h2>{{post.user.username}}</h2></a><br/> 
+    </div>  
+    <div>
+    <p>likes count: {{likes_count}} </p> 
+    <div> <h3>liked by users:</h3></div>
+    {% for like in likes%}
+        <h6>{{like.user}}</h3>
+    {%endfor%} 
+    <p>comment count: {{comments_count}} </p> 
+    </div>  
+    {% for comment in comments%}
+        <div> <h3>Comments:</h3></div>
+        <h6>{{comment.user}}:</h6><h8> {{comment.text}} </h8>
+        <p>created at: {{comment.created_at}} </p> 
+    {%endfor%}       
 {% endblock %} 

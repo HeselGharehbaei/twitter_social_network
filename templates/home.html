@@ -9,17 +9,19 @@
         <input type="text" name="q" placeholder="Search...">
         <button type="submit">Search Posts</button>
     </form>
+    <div class="card">
     {%for post in posts_detailes%}   
-        <a href = "{% url 'post' post.title %}">{{post.title}}</a><br/>  
+        <a class="card-body" href = "{% url 'post' post.title %}">{{post.title}}</a><br/>  
         <div>
             <h2>{{post.text}}</h2> 
         </div>       
         <div>
             {%for account in accounts_detailes%} 
                 {%if account == post.user%}
-                    <a href = "{% url 'account' account.username %}"><h2>{{post.user}}</h2></a><br/>  
+                    <a class="card-body" href = "{% url 'account' account.username %}"><h2>{{post.user}}</h2></a><br/>  
                 {% endif %} 
             {%endfor%}      
         </div>              
-    {% endfor %}  
+    {% endfor %}
+    </div>  
 {% endblock %}
