@@ -1,7 +1,4 @@
 from django.shortcuts import render
-
-# Create your views here.
-from django.shortcuts import render
 from .models import Account, Follow
 from post.models import Post
 from django.db.models import Q

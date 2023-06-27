@@ -1,6 +1,7 @@
 from django.db import models
 from uuid import uuid4
 from django.db.models.query import QuerySet
+from django.utils import timezone
 
 # Create your models here.
 class BaseModel(models.Model):
@@ -36,5 +37,5 @@ class SoftDeleteModel(BaseModel):
 
 
 class TimeStampMixin:
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True, default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True, default=timezone.now)

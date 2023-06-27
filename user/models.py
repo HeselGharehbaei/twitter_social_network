@@ -31,6 +31,11 @@ class Account(AbstractUser):
     )
 
 
+    date_joined = models.DateTimeField(_('date joined'), default=timezone.now,
+        blank= False, null=False                               
+    )
+
+
     def get_followers_and_following(self):
         following_count = self.following.count()
         followers_count = self.followers.count()
