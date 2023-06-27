@@ -31,22 +31,22 @@ class Account(AbstractUser):
     )
 
 
-    # def get_followers_and_following(self):
-    #     following_count = self.following.count()
-    #     followers_count = self.followers.count()
-    #     following = [(follow.to_user.username) for follow in self.following.all()]
-    #     followers = [(follow.from_user.username) for follow in self.followers.all()]
-    #     return following_count, following, followers_count, followers  
+    def get_followers_and_following(self):
+        following_count = self.following.count()
+        followers_count = self.followers.count()
+        following = [(follow.to_user.username) for follow in self.following.all()]
+        followers = [(follow.from_user.username) for follow in self.followers.all()]
+        return following_count, following, followers_count, followers  
 
 
     class Meta:
         verbose_name, verbose_name_plural = _("User"), _("Users")    
 
 
-# class Follow(TimeStampMixin):
-#     from_user = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='following')
-#     to_user = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='followers')  
+class Follow(models.Model, TimeStampMixin):
+    from_user = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='following')
+    to_user = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='followers')  
 
 
-#     def __str__(self):
-#         return f'{self.from_user} following {self.to_user}'     
+    def __str__(self):
+        return f'{self.from_user} following {self.to_user}'     
