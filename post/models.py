@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext as _
 from core.models import TimeStampMixin
+from django.urls import reverse
 
 
 class Post(models.Model, TimeStampMixin):
@@ -44,7 +45,11 @@ class Post(models.Model, TimeStampMixin):
 
     def get_image(self):
         images = self.image.all()
-        return images  
+        return images 
+
+
+    def get_url(self):
+        return reverse('post:post', args= (self.title, ))    
 
 
     @classmethod
