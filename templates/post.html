@@ -1,7 +1,11 @@
 {% extends 'base.html' %}
 {% block title %} post | {{post.title}} {%endblock%}
 {% block content %}
-    <a href="{% url 'post:delete post' post.title %}" class="btn btn-danger">Delete Post</a>
+    {% if request.user.is_authenticated %}
+        {% if request.user ==  post.user %}
+            <a href="{% url 'post:delete post' post.title %}" class="btn btn-danger">Delete Post</a>
+        {% endif %}  
+    {% endif %}      
     {% for tag in tags%}
         <h1>{{tag.name}}</h1>                 
     {%endfor%}    
