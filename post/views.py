@@ -1,14 +1,14 @@
-from django.shortcuts import render
-
-# Create your views here.
 from django.shortcuts import render, redirect
 from .models import Post, Comment
 from django.db.models import Q
 from django.views import View
+from django.contrib import messages
+from .forms import CreatCommentForm
 
 
 class PostView(View):
     def get(self, request, post_title):
+        print(request.user)
         post= Post.objects.get(title= post_title)
         tags = post.tags.all()
         likes, likes_count = post.get_like()
@@ -16,7 +16,7 @@ class PostView(View):
         images = post.get_image()
         return render(request, 'post.html', 
         {'post': post, 'tags': tags, 'likes_count': likes_count, 'likes': likes,
-        'comments_count': comments_count, 'comments': comments, 'images': images})   
+        'comments_count': comments_count, 'comments': comments, 'images': images})          
 
 
 class SearchPostsView(View):
@@ -30,10 +30,12 @@ class SearchPostsView(View):
 class DeletePostView(View):
     def get(self, request, post_title):
         Post.objects.get(title= post_title).delete()
+        messages.success(request, 'post deleted successfully', 'success')
         return redirect("user:home")
 
 
 class DeleteCommentView(View):
     def get(self, request, comment_id):
         Comment.objects.get(id= comment_id).delete()
-        return redirect("user:home")        
+        messages.success(request, 'comment deleted successfully', 'success')
+        return redirect("user:home")                      
