@@ -1,8 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Account, Follow
 from post.models import Post
 from django.db.models import Q
 from django.views import View
+from .forms import LoginForm
+from django.contrib.auth import authenticate, login, logout
+from django.http import HttpResponse
+
 
 
 class HomePageView(View):
@@ -24,3 +28,40 @@ class SearchAccountView(View):
         accounts = Account.objects.filter(Q(username__icontains=query))
         context = {'accounts': accounts}
         return render(request, 'search_account.html', context)
+
+
+class UserLoginView(View):
+
+
+    my_form = LoginForm
+    my_template = 'login.html'
+
+    def get(self, request):
+        form = self.my_form()
+        context = {'form': form}
+        return render(request, self.my_template, context)  
+
+
+    def post(self, request):
+        form = self.my_form(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            user= authenticate(username=form.clean_name(), password= cd["password"])
+            if user:
+                login(request, user)
+                messages.success(request, 'logging in successfully', 'success')
+                return redirect("user:home")
+        context = {'form': form}        
+        return render(
+           request, self.my_template, context) 
+
+
+class UserLogoutView(View):
+    def get(self, request):
+        logout(request)
+        messages.success(request, 'logging out successfully', 'success')
+        return redirect("user:home")
+
+
+
+                       
