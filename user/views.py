@@ -3,10 +3,11 @@ from .models import Account, Follow
 from post.models import Post
 from django.db.models import Q
 from django.views import View
-from .forms import LoginForm
+from .forms import LoginForm, UserRegistrationForm
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
 from django.contrib import messages
+from .models import Account
 
 
 
@@ -62,6 +63,31 @@ class UserLogoutView(View):
         logout(request)
         messages.success(request, 'logging out successfully', 'success')
         return redirect("user:home")
+
+
+class UserRegistrationView(View):
+
+
+    my_form = UserRegistrationForm
+    my_template = 'register.html'
+
+
+    def get(self, request):
+        form = self.my_form()
+        context = {'form': form}
+        return render(request, self.my_template, context)  
+
+
+    def post(self, request):
+        form = self.my_form(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            user = Account.objects.create_user(cd["username"], cd["email"], cd["password"])
+            messages.success(request, 'create user successfully', 'success') 
+            return redirect("user:home")
+        context = {'form': form}        
+        return render(
+           request, self.my_template, context)             
 
 
 

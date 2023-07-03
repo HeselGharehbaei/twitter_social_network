@@ -14,7 +14,7 @@ class Account(AbstractUser):
         _('Phone Number'),
         max_length=11,
         help_text=_("Phone Number of user"),  
-        unique=True, 
+        unique=False, 
         validators=[
             RegexValidator(regex="\A(09)(0|1|2|3)[0-9]{7}\d\Z", message="phone number is not correct")
         ])

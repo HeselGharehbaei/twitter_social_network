@@ -1,4 +1,5 @@
 from django import forms
+from .models import Account
 
 
 class LoginForm(forms.Form):
@@ -11,4 +12,10 @@ class LoginForm(forms.Form):
 
 
     def clean(self): 
-        pass      
+        pass   
+
+
+class UserRegistrationForm(forms.ModelForm):
+    class Meta:
+        model = Account
+        fields = ("username", "email", "password", "phone_number")
