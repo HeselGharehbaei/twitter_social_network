@@ -8,6 +8,6 @@ urlpatterns = [
     path('delete/post/<str:post_title>', views.DeletePostView.as_view(), name='delete post'),
     path('edit/post/<str:post_title>', views.EditPostView.as_view(), name='edit post'),
     path('delete/comment/<int:comment_id>', views.DeleteCommentView.as_view(), name='delete comment'),
-    path('creat/comment/<str:post_title>/<str:account_username>', views.CreatCommentView.as_view(), name='create_comment')
-
+    path('creat/comment/<str:post_title>/<str:account_username>', views.CreatCommentView.as_view(), name='create_comment'),
+    path('creat/comment/<str:post_title>/<str:account_username>/<int:comment_id>', views.CreatCommentForCommentView.as_view(), name='create_comment_for_comment')
 ]

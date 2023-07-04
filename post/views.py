@@ -85,4 +85,37 @@ class CreatCommentView(View):
             return redirect("user:home")
         context = {'form': form}        
         return render(
-           request, self.my_template, context) 
+           request, self.my_template, context)
+
+
+class CreatCommentForCommentView (View):
+
+
+    my_form = CreatCommentForm
+    my_template = 'post/creat_comment.html'
+
+
+    def get(self, request, post_title, account_username, comment_id):
+        post = Post.objects.get(title=post_title)
+        user =Account.objects.get(username=account_username)
+        comment = Comment.objects.get(id=comment_id)
+        form = self.my_form()
+        context = {'form': form}
+        return render(request, self.my_template, context)  
+
+
+    def post(self, request, post_title, account_username, comment_id):
+        post = Post.objects.get(title=post_title)
+        user =Account.objects.get(username=account_username)
+        comment = Comment.objects.get(id=comment_id)
+        form = self.my_form(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            comment = Comment.objects.create(text= cd["text"], user= user, post = post, parent =comment)
+            messages.success(request, 'create comment successfully', 'success') 
+            return redirect("user:home")
+        context = {'form': form}        
+        return render(
+           request, self.my_template, context)
+
+
