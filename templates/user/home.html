@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %} Home {%endblock%}
+{% block content %}
+    <form method="get" action="{% url 'user:search account' %}">
+        <input type="text" name="q" placeholder="Search...">
+        <button type="submit">Search Accounts</button>
+    </form>
+    <form method="get" action="{% url 'post:search posts' %}">
+        <input type="text" name="q" placeholder="Search...">
+        <button type="submit">Search Posts</button>
+    </form>
+    <div class="card">
+        {% include  'post_details_for_home.html' %}
+    </div>  
+{% endblock %}
