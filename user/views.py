@@ -10,33 +10,33 @@ from django.contrib import messages
 from .models import Account
 
 
-
 class HomePageView(View):
     def get(self, request):
-        accounts_detailes = Account.objects.all()
         posts_detailes = Post.objects.all()
-        return render(request, 'home.html', {'accounts_detailes': accounts_detailes, 'posts_detailes': posts_detailes})
+        return render(request, 'user/home.html', {'posts_detailes': posts_detailes})
+
 
 class AccountView(View):
     def get(self, request, account_username):
         accounts = Account.objects.get(username=account_username)
         following_count, following, followers_count, followers = accounts.get_followers_and_following()
         posts = accounts.post.all()
-        return render(request, 'account.html', {'accounts': accounts, 'following_count': following_count, 'following': following, 'followers_count': followers_count, 'followers': followers, 'posts': posts})
+        return render(request, 'user/account.html', {'accounts': accounts, 'following_count': following_count, 'following': following, 'followers_count': followers_count, 'followers': followers, 'posts': posts})
+
 
 class SearchAccountView(View):
     def get(self, request):
         query = request.GET.get('q')
         accounts = Account.objects.filter(Q(username__icontains=query))
         context = {'accounts': accounts}
-        return render(request, 'search_account.html', context)
+        return render(request, 'user/search_account.html', context)
 
 
 class UserLoginView(View):
 
 
     my_form = LoginForm
-    my_template = 'login.html'
+    my_template = 'user/login.html'
 
     def get(self, request):
         form = self.my_form()
@@ -69,7 +69,7 @@ class UserRegistrationView(View):
 
 
     my_form = UserRegistrationForm
-    my_template = 'register.html'
+    my_template = 'user/register.html'
 
 
     def get(self, request):
@@ -94,7 +94,8 @@ class UserEditProfileView(View):
     def get(self, request, account_username):
         user = Account.objects.get(username=account_username)
         form = UserEditProfileForm(instance=user)
-        return render(request, 'usereditprofile.html', {'form': form})
+        return render(request, 'user/usereditprofile.html', {'form': form})
+        
 
     def post(self, request, account_username):
         user = Account.objects.get(username=account_username)
@@ -104,5 +105,5 @@ class UserEditProfileView(View):
             form.save()
             messages.success(request, 'your account updated successfully', 'success')
             return redirect("user:account", account_username=cd["username"])
-        return render(request, 'usereditprofile.html', {'form': form})
+        return render(request, 'user/usereditprofile.html', {'form': form})
                        

@@ -1,4 +1,5 @@
 from django import forms
+from .models import Post, Comment
 
 
 class CreatCommentForm(forms.Form):
@@ -11,4 +12,17 @@ class CreatCommentForm(forms.Form):
 
 
     def clean(self): 
-        pass      
+        pass  
+
+
+class PostEditForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = ("title", "text")   
+
+
+class CreatCommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ("text", ) 
+

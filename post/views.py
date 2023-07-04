@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
 from .models import Post, Comment
+from user.models import Account
 from django.db.models import Q
 from django.views import View
 from django.contrib import messages
-from .forms import CreatCommentForm
+from .forms import CreatCommentForm, PostEditForm
 
 
 class PostView(View):
@@ -14,7 +15,7 @@ class PostView(View):
         likes, likes_count = post.get_like()
         comments, comments_count = post.get_comments()
         images = post.get_image()
-        return render(request, 'post.html', 
+        return render(request, 'post/post.html', 
         {'post': post, 'tags': tags, 'likes_count': likes_count, 'likes': likes,
         'comments_count': comments_count, 'comments': comments, 'images': images})          
 
@@ -24,7 +25,7 @@ class SearchPostsView(View):
         query = request.GET.get('q')
         posts = Post.objects.filter(Q(title__icontains=query))
         context = {'posts': posts}
-        return render(request, 'search_post.html', context)
+        return render(request, 'post/search_post.html', context)
 
 
 class DeletePostView(View):
@@ -38,4 +39,50 @@ class DeleteCommentView(View):
     def get(self, request, comment_id):
         Comment.objects.get(id= comment_id).delete()
         messages.success(request, 'comment deleted successfully', 'success')
-        return redirect("user:home")                      
+        return redirect("user:home")   
+
+
+class EditPostView(View):
+    def get(self, request, post_title):
+        post = Post.objects.get(title=post_title)
+        form = PostEditForm(instance=post)
+        return render(request, 'post/postedit.html', {'form': form})
+
+    def post(self, request, post_title):
+        post = Post.objects.get(title=post_title)
+        form = PostEditForm(request.POST, request.FILES, instance=post)
+        if form.is_valid():
+            cd = form.cleaned_data
+            form.save()
+            messages.success(request, 'post edited successfully', 'success')
+            return redirect("user:home")
+        return render(request, 'post/postedit.html', {'form': form})  
+
+
+class CreatCommentView(View):
+
+
+    my_form = CreatCommentForm
+    my_template = 'post/creat_comment.html'
+
+
+    def get(self, request, post_title, account_username):
+        post = Post.objects.get(title=post_title)
+        user =Account.objects.get(username=account_username)
+        form = self.my_form()
+        context = {'form': form}
+        return render(request, self.my_template, context)  
+
+
+    def post(self, request, post_title, account_username):
+        post = Post.objects.get(title=post_title)
+        user =Account.objects.get(username=account_username)
+        form = self.my_form(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            comment = Comment.objects.create(text= cd["text"], user= user, post = post)
+            messages.success(request, 'create comment successfully', 'success') 
+            return redirect("user:home")
+        context = {'form': form}        
+        return render(
+           request, self.my_template, context) 
