@@ -1,12 +1,19 @@
 {% extends 'base.html' %}
 {% block title %} account | {{accounts.username}} {%endblock%}
 {% block content %}
-{% load static %}
-    {% if accounts.image %}
-        <img src="{{ accounts.image.url }}" width="150" height="150">
-    {% else %}
-        <img src="{{ MEDIA_URL }}" width="150" height="150">
-    {% endif %}
+<div>
+    {% if request.user.is_authenticated %}
+        {% if request.user.username == accounts.username %}
+            <a href="{% url 'user:edit profile' request.user %}" class="btn btn-info">Edit Profile</a>
+        {% endif %}    
+    {% endif %}  
+</div>      
+    {% load static %}
+        {% if accounts.image %}
+            <img src="{{ accounts.image.url }}" width="150" height="150">
+        {% else %}
+            <img src="{{ MEDIA_URL }}" width="150" height="150">
+        {% endif %}
 	    <h1>{{accounts.username}}</h1> 
         <h2>{{accounts.bio}}</h2>  
         <h2>{{accounts.date_of_birth}}</h2> 

@@ -3,7 +3,7 @@ from .models import Account, Follow
 from post.models import Post
 from django.db.models import Q
 from django.views import View
-from .forms import LoginForm, UserRegistrationForm
+from .forms import LoginForm, UserRegistrationForm, UserEditProfileForm
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
 from django.contrib import messages
@@ -90,5 +90,19 @@ class UserRegistrationView(View):
            request, self.my_template, context)             
 
 
+class UserEditProfileView(View):
+    def get(self, request, account_username):
+        user = Account.objects.get(username=account_username)
+        form = UserEditProfileForm(instance=user)
+        return render(request, 'usereditprofile.html', {'form': form})
 
+    def post(self, request, account_username):
+        user = Account.objects.get(username=account_username)
+        form = UserEditProfileForm(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+            cd = form.cleaned_data
+            form.save()
+            messages.success(request, 'your account updated successfully', 'success')
+            return redirect("user:account", account_username=cd["username"])
+        return render(request, 'usereditprofile.html', {'form': form})
                        

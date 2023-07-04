@@ -19,3 +19,9 @@ class UserRegistrationForm(forms.ModelForm):
     class Meta:
         model = Account
         fields = ("username", "email", "password", "phone_number")
+
+
+class UserEditProfileForm(forms.ModelForm):
+    class Meta:
+        model = Account
+        fields = ("username", "email", "first_name", "last_name", "phone_number", "image", "bio")           
