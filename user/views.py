@@ -20,8 +20,7 @@ class AccountView(View):
     def get(self, request, account_username):
         accounts = Account.objects.get(username=account_username)
         following_count, following, followers_count, followers = accounts.get_followers_and_following()
-        posts = accounts.post.all()
-        return render(request, 'user/account.html', {'accounts': accounts, 'following_count': following_count, 'following': following, 'followers_count': followers_count, 'followers': followers, 'posts': posts})
+        return render(request, 'user/account.html', {'accounts': accounts, 'following_count': following_count, 'following': following, 'followers_count': followers_count, 'followers': followers})
 
 
 class SearchAccountView(View):
@@ -106,4 +105,13 @@ class UserEditProfileView(View):
             messages.success(request, 'your account updated successfully', 'success')
             return redirect("user:account", account_username=cd["username"])
         return render(request, 'user/usereditprofile.html', {'form': form})
+
+
+class UserPostsView(View):
+    def get(self, request, account_username):
+        accounts = Account.objects.get(username=account_username)
+        posts_detailes = accounts.post.all()
+        return render(request, 'user/user_post.html', {'posts_detailes': posts_detailes, "account_username": account_username})
+
+
                        
