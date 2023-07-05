@@ -5,19 +5,14 @@ from django.db.models import Q
 from django.views import View
 from django.contrib import messages
 from .forms import CreatCommentForm, PostEditForm, AddPostForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class PostView(View):
     def get(self, request, post_title):
         print(request.user)
-        post= Post.objects.get(title= post_title)
-        tags = post.tags.all()
-        likes, likes_count = post.get_like()
-        comments, comments_count = post.get_comments()
-        images = post.get_image()
-        return render(request, 'post/post.html', 
-        {'post': post, 'tags': tags, 'likes_count': likes_count, 'likes': likes,
-        'comments_count': comments_count, 'comments': comments, 'images': images})          
+        post= get_object_or_404(Post, title= post_title)
+        return render(request, 'post/post_details_from_title.html', {'post': post})          
 
 
 class SearchPostsView(View):
@@ -28,40 +23,52 @@ class SearchPostsView(View):
         return render(request, 'post/search_post.html', context)
 
 
-class DeletePostView(View):
+class DeletePostView(LoginRequiredMixin, View):
     def get(self, request, post_title):
-        Post.objects.get(title= post_title).delete()
+        get_object_or_404(Post, title= post_title).delete()
         messages.success(request, 'post deleted successfully', 'success')
         return redirect("user:home")
 
 
-class DeleteCommentView(View):
+class DeleteCommentView(LoginRequiredMixin, View):
     def get(self, request, comment_id):
-        Comment.objects.get(id= comment_id).delete()
+        get_object_or_404(Comment, id= comment_id).delete()
         messages.success(request, 'comment deleted successfully', 'success')
         return redirect("user:home")   
 
 
-class EditPostView(View):
+class EditPostView(LoginRequiredMixin, View):
+    my_form = PostEditForm
+    my_template = 'post/postedit.html'
+
+
+    def setup(self, request, post_title):
+        self.this_post = get_object_or_404(Post, title=post_title)
+        return super().setup(request, post_title)
+
+
+    def dispatch(self, request, post_title):
+        if self.this_post.user.id != request.user.id:
+            return redirect("user:home")
+        return super().dispatch(request, post_title)        
+
+
     def get(self, request, post_title):
-        post = Post.objects.get(title=post_title)
-        form = PostEditForm(instance=post)
-        return render(request, 'post/postedit.html', {'form': form})
+        form = self.my_form(instance=self.this_post)
+        return render(request, self.my_template, {'form': form})
+
 
     def post(self, request, post_title):
-        post = Post.objects.get(title=post_title)
-        form = PostEditForm(request.POST, request.FILES, instance=post)
+        form = self.my_form(request.POST, request.FILES, instance=self.this_post)
         if form.is_valid():
             cd = form.cleaned_data
             form.save()
             messages.success(request, 'post edited successfully', 'success')
             return redirect("user:home")
-        return render(request, 'post/postedit.html', {'form': form})  
+        return render(request, self.my_template, {'form': form})  
 
 
-class CreatCommentView(View):
-
-
+class CreatCommentView(LoginRequiredMixin, View):
     my_form = CreatCommentForm
     my_template = 'post/creat_comment.html'
 
@@ -88,9 +95,7 @@ class CreatCommentView(View):
            request, self.my_template, context)
 
 
-class CreatCommentForCommentView (View):
-
-
+class CreatCommentForCommentView(LoginRequiredMixin, View):
     my_form = CreatCommentForm
     my_template = 'post/creat_comment.html'
 
@@ -119,9 +124,7 @@ class CreatCommentForCommentView (View):
            request, self.my_template, context)
 
 
-class AddPostView(View):
-
-
+class AddPostView(LoginRequiredMixin, View):
     my_form = AddPostForm
     my_template = 'post/add_post.html'
 

@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Account, Follow
 from post.models import Post
 from django.db.models import Q
@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
 from django.contrib import messages
 from .models import Account
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 class HomePageView(View):
     def get(self, request):
@@ -32,8 +32,6 @@ class SearchAccountView(View):
 
 
 class UserLoginView(View):
-
-
     my_form = LoginForm
     my_template = 'user/login.html'
 
@@ -57,7 +55,7 @@ class UserLoginView(View):
            request, self.my_template, context) 
 
 
-class UserLogoutView(View):
+class UserLogoutView(LoginRequiredMixin, View):
     def get(self, request):
         logout(request)
         messages.success(request, 'logging out successfully', 'success')
@@ -65,8 +63,6 @@ class UserLogoutView(View):
 
 
 class UserRegistrationView(View):
-
-
     my_form = UserRegistrationForm
     my_template = 'user/register.html'
 
@@ -89,29 +85,42 @@ class UserRegistrationView(View):
            request, self.my_template, context)             
 
 
-class UserEditProfileView(View):
+class UserEditProfileView(LoginRequiredMixin, View):
+    my_form = UserEditProfileForm
+    my_template = 'user/usereditprofile.html'   
+
+
+    def setup(self, request, account_username):
+        self.this_user = get_object_or_404(Account, username=account_username)
+        return super().setup(request, account_username)
+
+
+    def dispatch(self, request, account_username):
+        if self.this_user.id != request.user.id:
+            return redirect("user:home")
+        return super().dispatch(request, account_username) 
+
+
     def get(self, request, account_username):
-        user = Account.objects.get(username=account_username)
-        form = UserEditProfileForm(instance=user)
-        return render(request, 'user/usereditprofile.html', {'form': form})
+        form = self.my_form(instance=self.this_user)
+        return render(request, self.my_template, {'form': form})
         
 
     def post(self, request, account_username):
-        user = Account.objects.get(username=account_username)
-        form = UserEditProfileForm(request.POST, request.FILES, instance=user)
+        form = self.my_form(request.POST, request.FILES, instance=self.this_user)
         if form.is_valid():
             cd = form.cleaned_data
             form.save()
             messages.success(request, 'your account updated successfully', 'success')
             return redirect("user:account", account_username=cd["username"])
-        return render(request, 'user/usereditprofile.html', {'form': form})
+        return render(request, self.my_template, {'form': form})
 
 
-class UserPostsView(View):
+class UserPostsView(LoginRequiredMixin, View):
     def get(self, request, account_username):
-        accounts = Account.objects.get(username=account_username)
+        accounts = get_object_or_404(Account, username=account_username)
         posts_detailes = accounts.post.all()
-        return render(request, 'post/user_post.html', {'posts_detailes': posts_detailes, "account_username": account_username})
+        return render(request, 'post/user_post.html', {'posts_detailes': posts_detailes})
 
 
                        
