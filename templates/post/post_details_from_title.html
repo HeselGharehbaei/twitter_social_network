@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 {% block title %} post | {{post.title}} {%endblock%}
 {% block content %}
+    {% if request.user ==  post.user %}
+        <a href="{% url 'post:delete post' post.title %}" class="btn btn-danger">Delete Post</a>
+        <a href="{% url 'post:edit post' post.title %}" class="btn btn-info">Edit Post</a>
+    {% endif %}
 {% include  'post_details.html' %}          
 {% endblock %} 

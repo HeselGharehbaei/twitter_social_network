@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Post, Comment
+from .models import Post, Comment, Like
 from user.models import Account
 from django.db.models import Q
 from django.views import View
@@ -73,21 +73,19 @@ class CreatCommentView(LoginRequiredMixin, View):
     my_template = 'post/creat_comment.html'
 
 
-    def get(self, request, post_title, account_username):
+    def get(self, request, post_title):
         post = Post.objects.get(title=post_title)
-        user =Account.objects.get(username=account_username)
         form = self.my_form()
         context = {'form': form}
         return render(request, self.my_template, context)  
 
 
-    def post(self, request, post_title, account_username):
+    def post(self, request, post_title):
         post = Post.objects.get(title=post_title)
-        user =Account.objects.get(username=account_username)
         form = self.my_form(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
-            comment = Comment.objects.create(text= cd["text"], user= user, post = post)
+            comment = Comment.objects.create(text= cd["text"], user= request.user, post = post)
             messages.success(request, 'create comment successfully', 'success') 
             return redirect("user:home")
         context = {'form': form}        
@@ -100,23 +98,21 @@ class CreatCommentForCommentView(LoginRequiredMixin, View):
     my_template = 'post/creat_comment.html'
 
 
-    def get(self, request, post_title, account_username, comment_id):
+    def get(self, request, post_title, comment_id):
         post = Post.objects.get(title=post_title)
-        user =Account.objects.get(username=account_username)
         comment = Comment.objects.get(id=comment_id)
         form = self.my_form()
         context = {'form': form}
         return render(request, self.my_template, context)  
 
 
-    def post(self, request, post_title, account_username, comment_id):
+    def post(self, request, post_title, comment_id):
         post = Post.objects.get(title=post_title)
-        user =Account.objects.get(username=account_username)
         comment_base = Comment.objects.get(id=comment_id)
         form = self.my_form(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
-            comment = Comment.objects.create(text= cd["text"], user= user, post = post, parent =comment_base)
+            comment = Comment.objects.create(text= cd["text"], user= request.user, post = post, parent =comment_base)
             messages.success(request, 'create comment successfully', 'success') 
             return redirect("user:home")
         context = {'form': form}        
@@ -149,5 +145,16 @@ class AddPostView(LoginRequiredMixin, View):
         return render(
            request, self.my_template, context)    
 
+
+class PostLikeView(LoginRequiredMixin, View):
+	def get(self, request, post_id):
+		post = get_object_or_404(Post, id=post_id)
+		like = Like.objects.filter(post=post, user=request.user)
+		if like.exists():
+			messages.error(request, 'you have already liked this post', 'danger')
+		else:
+			Like.objects.create(post=post, user=request.user)
+			messages.success(request, 'you liked this post', 'success')
+		return redirect('user:home')
 
 
