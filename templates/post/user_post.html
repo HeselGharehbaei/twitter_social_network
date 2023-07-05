@@ -2,7 +2,6 @@
 {% block title %} post| {{account_username}} {%endblock%}
 {% block content %}
 {%for post in posts_detailes%}  
-<a href="{% url 'post:delete post' post.title %}" class="btn btn-danger">Delete Post</a>    
-{% include  'post_details_for_home.html' %}    
+    {% include  'post_details.html' %}    
 {% endfor %}
 {% endblock %}

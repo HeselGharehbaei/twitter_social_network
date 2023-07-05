@@ -1,3 +1,7 @@
+{% if request.user ==  post.user %}
+<a href="{% url 'post:delete post' post.title %}" class="btn btn-danger">Delete Post</a>
+<a href="{% url 'post:edit post' post.title %}" class="btn btn-info">Edit Post</a>
+{% endif %} 
     <div> <h3>title:</h3> 
     <a class="card-body" href = "{{post.get_url}}">{{post.title}}</a><br/>  
     <div> <h3>text:</h3> 
