@@ -81,7 +81,7 @@ class UserRegistrationView(View):
         form = self.my_form(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
-            user = Account.objects.create_user(cd["username"], cd["email"], cd["password"])
+            user = Account.objects.create_user(cd["username"], cd["email"], cd["password1"])
             messages.success(request, 'create user successfully', 'success') 
             return redirect("user:home")
         context = {'form': form}        
@@ -111,7 +111,7 @@ class UserPostsView(View):
     def get(self, request, account_username):
         accounts = Account.objects.get(username=account_username)
         posts_detailes = accounts.post.all()
-        return render(request, 'user/user_post.html', {'posts_detailes': posts_detailes, "account_username": account_username})
+        return render(request, 'post/user_post.html', {'posts_detailes': posts_detailes, "account_username": account_username})
 
 
                        

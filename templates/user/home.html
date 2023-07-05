@@ -10,6 +10,8 @@
         <button type="submit">Search Posts</button>
     </form>
     <div class="card">
+    {%for post in posts_detailes%}      
         {% include  'post_details_for_home.html' %}
+    {% endfor %}    
     </div>  
 {% endblock %}

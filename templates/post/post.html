@@ -18,7 +18,7 @@
         {%endfor%}     
     {% endif %}    
     <div>
-        <h2>{{post.user.username}}</h2></a><br/> 
+        <a class="card-body" href = "{% url 'user:account' post.user %}"><h3>{{post.user}}</h2></a><br/> 
     </div>  
     <div>
     <p>likes count: {{likes_count}} </p> 

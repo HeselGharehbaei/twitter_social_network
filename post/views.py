@@ -1,10 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Post, Comment
 from user.models import Account
 from django.db.models import Q
 from django.views import View
 from django.contrib import messages
-from .forms import CreatCommentForm, PostEditForm
+from .forms import CreatCommentForm, PostEditForm, AddPostForm
 
 
 class PostView(View):
@@ -107,15 +107,44 @@ class CreatCommentForCommentView (View):
     def post(self, request, post_title, account_username, comment_id):
         post = Post.objects.get(title=post_title)
         user =Account.objects.get(username=account_username)
-        comment = Comment.objects.get(id=comment_id)
+        comment_base = Comment.objects.get(id=comment_id)
         form = self.my_form(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
-            comment = Comment.objects.create(text= cd["text"], user= user, post = post, parent =comment)
+            comment = Comment.objects.create(text= cd["text"], user= user, post = post, parent =comment_base)
             messages.success(request, 'create comment successfully', 'success') 
             return redirect("user:home")
         context = {'form': form}        
         return render(
            request, self.my_template, context)
+
+
+class AddPostView(View):
+
+
+    my_form = AddPostForm
+    my_template = 'post/add_post.html'
+
+
+    def get(self, request, account_username):
+        user =Account.objects.get(username=account_username)
+        form = self.my_form()
+        context = {'form': form}
+        return render(request, self.my_template, context)  
+
+
+    def post(self, request, account_username):
+        user =Account.objects.get(username=account_username)
+        form = self.my_form(request.POST, request.FILES)
+        if form.is_valid():
+            cd = form.cleaned_data
+            print(cd)
+            post = Post.objects.create(text= cd["text"], title= cd["title"], user= user)
+            messages.success(request, 'create post successfully', 'success') 
+            return redirect("user:posts of user", account_username= user)
+        context = {'form': form}        
+        return render(
+           request, self.my_template, context)    
+
 
 
