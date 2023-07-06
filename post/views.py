@@ -61,7 +61,6 @@ class EditPostView(LoginRequiredMixin, View):
     def post(self, request, post_title):
         form = self.my_form(request.POST, request.FILES, instance=self.this_post)
         if form.is_valid():
-            cd = form.cleaned_data
             form.save()
             messages.success(request, 'post edited successfully', 'success')
             return redirect("user:home")
@@ -177,6 +176,38 @@ class PostDisLikeView(LoginRequiredMixin, View):
         else:
             DisLike.objects.create(post=post, user=request.user)
             messages.success(request, 'you disliked this post', 'success')             
-        return redirect('user:home')        
+        return redirect('user:home')  
+
+
+class EditCommentView(LoginRequiredMixin, View): 
+    my_form = CreatCommentForm
+    my_template = 'post/creat_comment.html'
+
+
+    def setup(self, request, comment_id):
+        self.this_comment = get_object_or_404(Comment, id=comment_id)
+        return super().setup(request, comment_id)
+
+
+    def dispatch(self, request, comment_id):
+        if self.this_comment.user.id != request.user.id:
+            return redirect("user:home")
+        return super().dispatch(request, comment_id)        
+
+
+    def get(self, request, comment_id):
+        form = self.my_form(instance=self.this_comment)
+        return render(request, self.my_template, {'form': form})
+
+
+    def post(self, request, comment_id):
+        form = self.my_form(request.POST, instance=self.this_comment)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'create comment successfully', 'success') 
+            return redirect("user:home")
+        context = {'form': form}        
+        return render(
+           request, self.my_template, context)                
 
 

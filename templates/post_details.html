@@ -41,7 +41,7 @@
     </div> 
     <div> <h3>comments: </h3> 
         {% if request.user.is_authenticated %}
-            <a href="{% url 'post:create_comment' post.title %}" class="btn btn-info">Comment</a>
+            <a href="{% url 'post:create comment' post.title %}" class="btn btn-info">Comment</a>
         {% endif %} 
     </div> 
         {% for comment in post.comments.all%} 
@@ -54,6 +54,7 @@
                 <a href="{% url 'post:create_comment_for_comment' post.title  comment.id %}" class="btn btn-info">Comment to {{comment.user}}</a>
                 {% if request.user ==  comment.user or  request.user == post.user%}
                     <a href="{% url 'post:delete comment' comment.id %}" class="btn btn-danger">Delete Comment</a> 
+                    <a href="{% url 'post:edit comment' comment.id %}" class="btn btn-success">Edit Comment</a> 
                 {% endif %} 
             {% endif %}    
         {%endfor%}     
