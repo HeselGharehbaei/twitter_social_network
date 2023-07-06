@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Post, Comment, Like
+from .models import Post, Comment, Like, DisLike
 from user.models import Account
 from django.db.models import Q
 from django.views import View
@@ -147,14 +147,36 @@ class AddPostView(LoginRequiredMixin, View):
 
 
 class PostLikeView(LoginRequiredMixin, View):
-	def get(self, request, post_id):
-		post = get_object_or_404(Post, id=post_id)
-		like = Like.objects.filter(post=post, user=request.user)
-		if like.exists():
-			messages.error(request, 'you have already liked this post', 'danger')
-		else:
-			Like.objects.create(post=post, user=request.user)
-			messages.success(request, 'you liked this post', 'success')
-		return redirect('user:home')
+    def get(self, request, post_id):
+        post= get_object_or_404(Post, id=post_id)
+        like= Like.objects.filter(post=post, user=request.user)
+        dislike= DisLike.objects.filter(post=post, user=request.user)
+        if like.exists():
+            messages.error(request, 'you have already liked this post', 'danger')
+        elif dislike.exists():
+            dislike.delete()
+            Like.objects.create(post=post, user=request.user)
+            messages.success(request, 'you liked this post', 'success')
+        else:
+            Like.objects.create(post=post, user=request.user)
+            messages.success(request, 'you liked this post', 'success')      
+        return redirect('user:home')
+
+
+class PostDisLikeView(LoginRequiredMixin, View):
+    def get(self, request, post_id):
+        post = get_object_or_404(Post, id=post_id)
+        like = Like.objects.filter(post=post, user=request.user)
+        dislike = DisLike.objects.filter(post=post, user=request.user)
+        if dislike.exists():
+            messages.error(request, 'you have already disliked this post', 'danger')
+        elif like.exists():
+            like.delete()
+            DisLike.objects.create(post=post, user=request.user)
+            messages.success(request, 'you disliked this post', 'success') 
+        else:
+            DisLike.objects.create(post=post, user=request.user)
+            messages.success(request, 'you disliked this post', 'success')             
+        return redirect('user:home')        
 
 

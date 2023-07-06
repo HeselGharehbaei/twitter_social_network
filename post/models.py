@@ -133,4 +133,19 @@ class Like(models.Model, TimeStampMixin):
 
 
     def __str__(self):
-        return f'{self.user} likes {self.post}'                             
+        return f'{self.user} likes {self.post}'  
+
+
+class DisLike(models.Model, TimeStampMixin):
+    dislike = models.BooleanField(_("Is DisLike?"), default=False) 
+    post = models.ForeignKey(Post,
+                        related_name=_("dislike"),
+                        on_delete=models.CASCADE)
+    user = models.ForeignKey("user.Account",
+                        related_name=_("dislike"),
+                        on_delete=models.CASCADE
+                        ) 
+
+
+    def __str__(self):
+        return f'{self.user} dislike {self.post}'                                    
