@@ -11,8 +11,10 @@
             <a class="nav-link active" aria-current="page" href="{% url 'user:logout'%}">Logout {{request.user}}</a>
             <a class="nav-link active" aria-current="page" href="{% url 'user:account' request.user %}"  
             style="margin-left: auto;">{{request.user}} Profile</a>
-            <img src="{{ request.user.image.url }}" width="50" height="50"  
-            style="border-radius: 50%; margin-left: auto;">
+            {% if request.user.image %}
+              <img src="{{ request.user.image.url }}" width="50" height="50"  
+              style="border-radius: 50%; margin-left: auto;">
+            {% endif %}
           {% else %}  
             <a class="nav-link active" aria-current="page" href="{% url 'user:register'%}">Register</a>
             <a class="nav-link active" aria-current="page" href="{% url 'user:login'%}">Login</a>
