@@ -1,7 +1,12 @@
 {% extends 'base.html' %}
 {% block title %} post| {{account_username}} {%endblock%}
 {% block content %}
-{%for post in posts_detailes%}  
+<a href="{% url 'post:add post' request.user %}" class="btn btn-success">Add Post</a> 
+{%for post in posts_detailes%} 
+    {% if request.user ==  post.user %}
+        <a href="{% url 'post:delete post' post.title %}" class="btn btn-danger">Delete Post</a>
+        <a href="{% url 'post:edit post' post.title %}" class="btn btn-info">Edit Post</a>
+    {% endif %}  
     {% include  'post_details.html' %}    
 {% endfor %}
 {% endblock %}

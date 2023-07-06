@@ -18,9 +18,9 @@ class HomePageView(View):
 
 class AccountView(View):
     def get(self, request, account_username):
-        accounts = Account.objects.get(username=account_username)
-        following_count, following, followers_count, followers = accounts.get_followers_and_following()
-        return render(request, 'user/account.html', {'accounts': accounts, 'following_count': following_count, 'following': following, 'followers_count': followers_count, 'followers': followers})
+        account = Account.objects.get(username=account_username)
+        following_count, following, followers_count, followers = account.get_followers_and_following()
+        return render(request, 'user/account.html', {'account': account, 'following_count': following_count, 'following': following, 'followers_count': followers_count, 'followers': followers})
 
 
 class SearchAccountView(View):
@@ -118,9 +118,47 @@ class UserEditProfileView(LoginRequiredMixin, View):
 
 class UserPostsView(LoginRequiredMixin, View):
     def get(self, request, account_username):
-        accounts = get_object_or_404(Account, username=account_username)
-        posts_detailes = accounts.post.all()
+        account = get_object_or_404(Account, username=account_username)
+        posts_detailes = account.post.all()
         return render(request, 'post/user_post.html', {'posts_detailes': posts_detailes})
 
 
+class UserFollowView(LoginRequiredMixin, View):
+	def dispatch(self, request, account_username):
+		account = get_object_or_404(Account, username=account_username)
+		if account.id != request.user.id:
+			return super().dispatch(request, account_username)
+		else:
+			messages.error(request,'you cant follow/unfollow your account','danger')
+			return redirect('user:account', account_username)
+
+	def get(self, request, account_username):
+		account = get_object_or_404(Account, username=account_username)
+		follow = Follow.objects.filter(from_user=request.user, to_user=account)
+		if follow.exists():
+			messages.error(request, 'you are already following this user', 'danger')
+		else:
+			Follow(from_user=request.user, to_user=account).save()
+			messages.success(request, 'you followed this user', 'success')
+		return redirect('user:account', account_username)
+
+
+class UserUnfollowView(LoginRequiredMixin, View):
+	def dispatch(self, request, account_username):
+		account = get_object_or_404(Account, username=account_username)
+		if account.id != request.user.id:
+			return super().dispatch(request, account_username)
+		else:
+			messages.error(request,'you cant follow/unfollow your account','danger')
+			return redirect('user:account', account_username)
+
+	def get(self, request, account_username):
+		account = get_object_or_404(Account, username=account_username)
+		follow = Follow.objects.filter(from_user=request.user, to_user=account)
+		if follow.exists():
+			follow.delete()
+			messages.success(request, 'you unfollowed this user', 'success')
+		else:
+			messages.error(request, 'you are not following this user', 'danger')
+		return redirect('user:account', account_username)
                        
