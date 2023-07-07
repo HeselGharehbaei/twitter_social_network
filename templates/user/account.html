@@ -5,7 +5,7 @@
     {% if request.user.is_authenticated %}
         {% if request.user.username == account.username %}
             <a href="{% url 'user:edit profile' request.user %}" class="btn btn-info">Edit Profile</a>
-            <a href="{% url 'user:change password' request.user %}" class="btn btn-seccess">Change Password</a>
+            <a href="{% url 'user:change password' request.user %}" class="btn btn-primary">Change Password</a>
             <a href="{% url 'user:delete account' request.user %}" class="btn btn-danger">Delete Account</a>
             <a href="{% url 'user:posts of user' request.user %}" class="btn btn-info">Posts</a>
         {% endif %}    
