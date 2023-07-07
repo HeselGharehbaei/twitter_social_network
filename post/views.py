@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Post, Comment, Like, DisLike
+from .models import Post, Comment, Like, DisLike, Image, Tag
 from user.models import Account
 from django.db.models import Q
 from django.views import View
 from django.contrib import messages
-from .forms import CreatCommentForm, PostEditForm, AddPostForm
+from .forms import CreatCommentForm, PostForm, ImageForm, TagForm
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.forms import modelformset_factory
 
 
 class PostView(View):
@@ -38,8 +39,10 @@ class DeleteCommentView(LoginRequiredMixin, View):
 
 
 class EditPostView(LoginRequiredMixin, View):
-    my_form = PostEditForm
-    my_template = 'post/postedit.html'
+    my_post_form = PostForm
+    my_formset_image = modelformset_factory(Image, form= ImageForm)
+    my_formset_tag = modelformset_factory(Tag, form= TagForm)
+    my_template = 'post/add_edit_post.html'
 
 
     def setup(self, request, post_title):
@@ -54,17 +57,28 @@ class EditPostView(LoginRequiredMixin, View):
 
 
     def get(self, request, post_title):
-        form = self.my_form(instance=self.this_post)
-        return render(request, self.my_template, {'form': form})
+        post_form = self.my_post_form(instance=self.this_post)
+        formset_image = self.my_formset_image(queryset=self.this_post.image.all())
+        formset_tag = self.my_formset_tag(queryset=self.this_post.tags.all())
+        context = {'post_form': post_form, 'formset_image': formset_image, 'formset_tag': formset_tag}
+        return render(request, self.my_template, context) 
 
-
+        
     def post(self, request, post_title):
-        form = self.my_form(request.POST, request.FILES, instance=self.this_post)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'post edited successfully', 'success')
-            return redirect("user:home")
-        return render(request, self.my_template, {'form': form})  
+        post_form = self.my_post_form(request.POST, instance=self.this_post)
+        formset_image = self.my_formset_image(request.POST, request.FILES, queryset=self.this_post.image.all())
+        formset_tag = self.my_formset_tag(request.POST, queryset=self.this_post.tags.all())
+        if post_form.is_valid() and formset_image.is_valid() and formset_tag.is_valid() :
+            post = post_form.save(commit=False)
+            post.user = request.user
+            post.save()
+            formset_image.save()
+            formset_tag.save()       
+            messages.success(request, 'post edited successfully', 'success') 
+            return redirect("user:posts of user", account_username= request.user)
+        context = {'post_form': post_form, 'formset_image': formset_image, 'formset_tag': formset_tag}     
+        return render(
+           request, self.my_template, context)        
 
 
 class CreatCommentView(LoginRequiredMixin, View):
@@ -120,27 +134,43 @@ class CreatCommentForCommentView(LoginRequiredMixin, View):
 
 
 class AddPostView(LoginRequiredMixin, View):
-    my_form = AddPostForm
-    my_template = 'post/add_post.html'
+    my_post_form = PostForm
+    my_formset_image = modelformset_factory(Image, form= ImageForm)
+    my_formset_tag = modelformset_factory(Tag, form= TagForm)
+    my_template = 'post/add_edit_post.html'
 
 
     def get(self, request, account_username):
         user =Account.objects.get(username=account_username)
-        form = self.my_form()
-        context = {'form': form}
+        post_form = self.my_post_form()
+        formset_image = self.my_formset_image(queryset=Image.objects.none())
+        formset_tag = self.my_formset_tag(queryset=Tag.objects.none())
+        context = {'post_form': post_form, 'formset_image': formset_image, 'formset_tag': formset_tag}
         return render(request, self.my_template, context)  
 
 
     def post(self, request, account_username):
         user =Account.objects.get(username=account_username)
-        form = self.my_form(request.POST, request.FILES)
-        if form.is_valid():
-            cd = form.cleaned_data
-            print(cd)
-            post = Post.objects.create(text= cd["text"], title= cd["title"], user= user)
+        post_form = self.my_post_form(request.POST)
+        formset_image = self.my_formset_image(request.POST, request.FILES, queryset=Image.objects.none())
+        formset_tag = self.my_formset_tag(request.POST, queryset=Tag.objects.none())
+        if post_form.is_valid() and formset_image.is_valid() and formset_tag.is_valid() :
+            post = post_form.save(commit=False)
+            post.user = request.user
+            post.save()
+            for form in formset_image.cleaned_data:
+                if form:
+                    image = form["image"]
+                    photo = Image(post = post, image = image)
+                    photo.save()
+            for form in formset_tag.cleaned_data:
+                if form:
+                    name = form["name"]
+                    tag = Tag(post = post, name = name)
+                    tag.save()        
             messages.success(request, 'create post successfully', 'success') 
             return redirect("user:posts of user", account_username= user)
-        context = {'form': form}        
+        context = {'post_form': post_form, 'formset_image': formset_image, 'formset_tag': formset_tag}     
         return render(
            request, self.my_template, context)    
 

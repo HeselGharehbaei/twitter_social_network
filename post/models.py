@@ -27,7 +27,8 @@ class Post(models.Model, TimeStampMixin):
     tags = models.ManyToManyField(
         "Tag", 
         verbose_name=_("Tag"), 
-        related_name='posts_tags'
+        related_name='posts_tags',
+        null=True, blank=True
     )
 
 
@@ -88,7 +89,8 @@ class Image(models.Model, TimeStampMixin):
     alt = models.CharField(_("Alternative Text"), max_length=100)
     post = models.ForeignKey(Post,
                                 related_name=_("image"),
-                                on_delete=models.CASCADE)
+                                on_delete=models.CASCADE,
+                                null=True, blank=True)
     image = models.FileField(
         _("Image"), 
         upload_to="uploads/photos", 

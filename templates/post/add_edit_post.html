@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %} Add Post {% endblock %}
+{% block content %}
+
+<form id="post_form" action="" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% for hidden in post_form.hidden_fields %}
+        {{ hidden }}
+    {% endfor %}
+
+    <div>
+        {{ post_form.title.label_tag }}
+        {{ post_form.title }}
+        <span class="error-message">{{ post_form.title.errors }}</span>
+    </div>
+
+    <div>
+        {{ post_form.text.label_tag }}
+        {{ post_form.text }}
+        <span class="error-message">{{ post_form.text.errors }}</span>
+    </div>
+
+    {{ formset_image.management_form }}
+    {% for form in formset_image %}
+        <div>
+            {{ form.name.label_tag }}
+            {{ form.name }}
+            <span class="error-message">{{ form.name.errors }}</span>
+        </div>
+        <div>
+            {{ form.image.label_tag }}
+            {{ form.image }}
+            <span class="error-message">{{ form.image.errors }}</span>
+        </div>
+        <div>
+            {{ form.alt.label_tag }}
+            {{ form.alt }}
+            <span class="error-message">{{ form.alt.errors }}</span>
+        </div>
+    {% endfor %}
+
+    {{ formset_tag.management_form }}
+    {% for form in formset_tag %}
+        <div>
+            {{ form.name.label_tag }}
+            {{ form.name }}
+            <span class="error-message">{{ form.name.errors }}</span>
+        </div>
+    {% endfor %}
+
+    <input type="submit" value="Add Post">
+</form>
+
+{% endblock %}
