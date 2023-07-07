@@ -188,10 +188,11 @@ class AddPostView(LoginRequiredMixin, View):
             for form in formset_tag.cleaned_data:
                 if form:
                     name = form["name"]
-                    tag = Tag(post = post, name = name)
-                    tag.save()        
+                    tag = Tag(name = name, )
+                    tag.save() 
+                    post.tags =tag        
             messages.success(request, 'create post successfully', 'success') 
-            return redirect("user:posts_of_user", account_username= user)
+            return redirect("user:posts of user", account_username= user)
         context = {'post_form': post_form, 'formset_image': formset_image, 'formset_tag': formset_tag}     
         return render(
            request, self.my_template, context)    
