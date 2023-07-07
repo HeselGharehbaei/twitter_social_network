@@ -3,7 +3,7 @@ from .models import Account, Follow
 from post.models import Post
 from django.db.models import Q
 from django.views import View
-from .forms import LoginForm, UserRegistrationForm, UserEditProfileForm
+from .forms import LoginForm, UserRegistrationForm, UserEditProfileForm, ChangePasswordForm
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
 from django.contrib import messages
@@ -180,5 +180,36 @@ class DeleteAccountView(LoginRequiredMixin, View):
         account = get_object_or_404(Account, username=account_username).delete()
         messages.success(request, 'you deleted your account', 'success')      
         return redirect('user:home')
+
+
+class ChangePasswordView(LoginRequiredMixin, iew):
+    my_form = ChangePasswordForm
+    my_template = 'user/change_password.html'   
+
+
+    def setup(self, request, account_username):
+        self.this_user = get_object_or_404(Account, username=account_username)
+        return super().setup(request, account_username)
+
+
+    def dispatch(self, request, account_username):
+        if self.this_user.id != request.user.id:
+            return redirect("user:home")
+        return super().dispatch(request, account_username) 
+
+
+    def get(self, request, account_username):
+        form = self.my_form(instance=self.this_user)
+        return render(request, self.my_template, {'form': form})
+        
+
+    def post(self, request, account_username):
+        form = self.my_form(request.POST, request.FILES, instance=self.this_user)
+        if form.is_valid():
+            cd = form.cleaned_data
+            form.save()
+            messages.success(request, 'your change password successfully', 'success')
+            return redirect("user:account", account_username=cd["username"])
+        return render(request, self.my_template, {'form': form})
 
                        

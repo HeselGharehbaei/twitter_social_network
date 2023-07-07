@@ -1,6 +1,7 @@
 from django import forms
 from .models import Account
 from django.core.exceptions import ValidationError
+from django.contrib.auth.forms import SetPasswordForm
 
 
 class LoginForm(forms.Form):
@@ -39,4 +40,13 @@ class UserRegistrationForm(forms.Form):
 class UserEditProfileForm(forms.ModelForm):
     class Meta:
         model = Account
-        fields = ("username", "email", "first_name", "last_name", "phone_number", "image", "bio")           
+        fields = ("username", "email", "first_name", "last_name", "phone_number", "image", "bio")  
+
+
+class ChangePasswordForm(SetPasswordForm):
+	class Meta:
+        model = get_user_model()
+        fields = ("new_password1", "new_password2") 
+
+
+
