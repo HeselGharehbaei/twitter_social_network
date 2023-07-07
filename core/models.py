@@ -1,6 +1,6 @@
 from django.db import models
 from uuid import uuid4
-from django.db.models.query import QuerySet
+from django.db.models import QuerySet, Manager
 from django.utils import timezone
 
 # Create your models here.
@@ -12,23 +12,26 @@ class BaseModel(models.Model):
         abstract = True
 
 
-class MyManager(models.Manager):
+class SoftQuerySet(QuerySet):
+    def delete(self):
+        return self.update(is_deleted = True, deleted_at = timezone.now())      
+
+
+class SoftManager(Manager):
     def get_queryset(self) -> QuerySet:
-        return super().get_queryset().filter(is_deleted=False)
+        return SoftQuerySet(self.model, self._db).filter(Q(is_deleted=False) | Q(is_deleted__isnull= True))
 
 
-    def archives(self):
-        return super().get_queryset().filter(is_deleted=True)
+class SoftDeleteModel(models.Model):
+    objects = SoftManager()
 
-
-class SoftDeleteModel(BaseModel):
-    objects = MyManager()
-
-    is_deleted = models.BooleanField(default=False, db_index=True)
+    is_deleted = models.BooleanField(null=True, blank=True, editable=False, db_index=True)
+    deleted_at = models.DateTimeField(null=True, blank=True, editable=False, db_index=True)
 
 
     def delete(self):
         self.is_deleted = True
+        self.deleted_at = timezone.now()
         self.save()
         
 

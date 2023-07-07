@@ -12,15 +12,19 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 class HomePageView(View):
     def get(self, request):
-        posts_detailes = Post.objects.all()
+        posts_detailes = Post.objects.exclude(is_archived =True)
         return render(request, 'user/home.html', {'posts_detailes': posts_detailes})
 
 
 class AccountView(View):
     def get(self, request, account_username):
         account = Account.objects.get(username=account_username)
-        following_count, following, followers_count, followers = account.get_followers_and_following()
-        return render(request, 'user/account.html', {'account': account, 'following_count': following_count, 'following': following, 'followers_count': followers_count, 'followers': followers})
+        if account.is_deleted:
+            messages.error(request,'this account is deleted','danger')
+            return redirect("user:home")
+        else:    
+            following_count, following, followers_count, followers = account.get_followers_and_following()
+            return render(request, 'user/account.html', {'account': account, 'following_count': following_count, 'following': following, 'followers_count': followers_count, 'followers': followers})
 
 
 class SearchAccountView(View):
@@ -46,10 +50,11 @@ class UserLoginView(View):
         if form.is_valid():
             cd = form.cleaned_data
             user= authenticate(username=form.clean_name(), password= cd["password"])
-            if user:
+            if not user.is_deleted:
                 login(request, user)
                 messages.success(request, 'logging in successfully', 'success')
                 return redirect("user:home")
+        messages.success(request, 'Your account is deleted or not registred', 'danger')        
         context = {'form': form}        
         return render(
            request, self.my_template, context) 
@@ -161,4 +166,19 @@ class UserUnfollowView(LoginRequiredMixin, View):
 		else:
 			messages.error(request, 'you are not following this user', 'danger')
 		return redirect('user:account', account_username)
+
+
+class DeleteAccountView(LoginRequiredMixin, View):
+    def dispatch(self, request, account_username):
+        account = get_object_or_404(Account, username=account_username)
+        if account.id == request.user.id:
+            return super().dispatch(request, account_username)
+        else:
+            messages.error(request,'you cant delete this account','danger')
+            return redirect('user:account', account_username)
+    def get(self, request, account_username):
+        account = get_object_or_404(Account, username=account_username).delete()
+        messages.success(request, 'you deleted your account', 'success')      
+        return redirect('user:home')
+
                        

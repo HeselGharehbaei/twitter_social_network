@@ -12,36 +12,58 @@ from django.forms import modelformset_factory
 class PostView(View):
     def get(self, request, post_title):
         print(request.user)
-        post= get_object_or_404(Post, title= post_title)
+        post= get_object_or_404(Post, title= post_title, is_archived =False)
         return render(request, 'post/post_details_from_title.html', {'post': post})          
 
 
 class SearchPostsView(View):
     def get(self, request):
         query = request.GET.get('q')
-        posts = Post.objects.filter(Q(title__icontains=query))
+        posts = Post.objects.filter(Q(title__icontains=query, is_archived =False))
         context = {'posts': posts}
         return render(request, 'post/search_post.html', context)
 
 
 class DeletePostView(LoginRequiredMixin, View):
+    def setup(self, request, post_title):
+        self.this_post = get_object_or_404(Post, title=post_title)
+        return super().setup(request, post_title)
+
+
+    def dispatch(self, request, post_title):
+        if self.this_post.user.id != request.user.id:
+            return redirect("user:home")
+        return super().dispatch(request, post_title)  
+
+
     def get(self, request, post_title):
-        get_object_or_404(Post, title= post_title).delete()
+        self.this_post.delete()
         messages.success(request, 'post deleted successfully', 'success')
         return redirect("user:home")
 
 
 class DeleteCommentView(LoginRequiredMixin, View):
+    def setup(self, request, comment_id):
+        self.this_comment = get_object_or_404(Comment, id=comment_id)
+        return super().setup(request, comment_id)
+
+
+    def dispatch(self, request, comment_id):
+        if self.this_comment.user.id != request.user.id:
+            return redirect("user:home")
+        return super().dispatch(request, comment_id)        
+
+
     def get(self, request, comment_id):
-        get_object_or_404(Comment, id= comment_id).delete()
+        self.this_comment.delete()
         messages.success(request, 'comment deleted successfully', 'success')
         return redirect("user:home")   
 
 
 class EditPostView(LoginRequiredMixin, View):
     my_post_form = PostForm
-    my_formset_image = modelformset_factory(Image, form= ImageForm)
-    my_formset_tag = modelformset_factory(Tag, form= TagForm)
+    my_formset_image = modelformset_factory(Image, form= ImageForm, extra=3)
+    my_formset_tag = modelformset_factory(Tag, form= TagForm, extra=3)
     my_template = 'post/add_edit_post.html'
 
 
@@ -135,8 +157,8 @@ class CreatCommentForCommentView(LoginRequiredMixin, View):
 
 class AddPostView(LoginRequiredMixin, View):
     my_post_form = PostForm
-    my_formset_image = modelformset_factory(Image, form= ImageForm)
-    my_formset_tag = modelformset_factory(Tag, form= TagForm)
+    my_formset_image = modelformset_factory(Image, form= ImageForm, extra=3)
+    my_formset_tag = modelformset_factory(Tag, form= TagForm, extra=3)
     my_template = 'post/add_edit_post.html'
 
 
@@ -169,7 +191,7 @@ class AddPostView(LoginRequiredMixin, View):
                     tag = Tag(post = post, name = name)
                     tag.save()        
             messages.success(request, 'create post successfully', 'success') 
-            return redirect("user:posts of user", account_username= user)
+            return redirect("user:posts_of_user", account_username= user)
         context = {'post_form': post_form, 'formset_image': formset_image, 'formset_tag': formset_tag}     
         return render(
            request, self.my_template, context)    

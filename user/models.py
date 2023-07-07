@@ -7,9 +7,10 @@ from django.core.validators import RegexValidator
 from django.utils.translation import gettext_lazy as _
 from core.models import TimeStampMixin
 from django.utils import timezone
+from core.models import SoftDeleteModel
 
 
-class Account(AbstractUser):
+class Account(AbstractUser, SoftDeleteModel):
     phone_number= models.CharField(
         _('Phone Number'),
         max_length=11,
